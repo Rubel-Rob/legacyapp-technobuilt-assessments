@@ -1,0 +1,11 @@
+deploy_to_azure_vm: 
+  stage: deploy
+  image: mcr.microsoft.com/azure-cli:latest
+  before_script:
+    - az login --service-principal -u "$AZURE_CLIENT_ID" -p "$AZURE_CLIENT_SECRET" --tenant "$AZURE_TENANT_ID"
+    - az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+  script:
+    - az vm run-command invoke --resource-group $AZURE_RESOURCE_GROUP --name $VM_NAME --command-id RunShellScript --scripts cd /home/cloudadmin/technobuilt-legacyapp-nodejs && npm install && pm2 start index.js
+  only:
+    - main
+
